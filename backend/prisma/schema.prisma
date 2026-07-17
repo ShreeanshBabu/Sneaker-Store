@@ -11,3 +11,81 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  SHIPPED
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  RETURN_REQUESTED
+}
+
+model Sneaker {
+  id Int @id @default(autoincrement())
+  name String 
+  description String
+  brand String
+  mrp Decimal
+  createdAt DateTime @default(now())
+
+  variants SneakerVariant[]
+  images SneakerImage[]
+}
+
+model SneakerVariant {
+  id Int @id @default(autoincrement())
+  sneakerId Int
+  sneaker Sneaker @relation(fields:[sneakerId], references:[id])
+  size String
+  color String
+  discountedPrice Decimal
+  stock Int
+
+  orderItems OrderItem[]
+}
+
+model SneakerImage{
+  id Int @id @default(autoincrement())
+  sneakerId Int
+  sneaker Sneaker @relation(fields:[sneakerId], references:[id])
+  url String
+  indexNo Int
+  isThumbnail Boolean @default(false)
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  name String 
+  email String @unique
+  hashedPassword String
+  role Role
+  createdAt DateTime @default(now())
+
+  orders Order[]
+}
+
+model Order {
+  id Int @id @default(autoincrement())
+  userId Int
+  user User @relation(fields:[userId], references:[id])
+  status OrderStatus
+  purchasedDate DateTime @default(now())
+
+  orderItems OrderItem[]
+}
+
+model OrderItem {
+  id Int @id @default(autoincrement())
+  orderId Int
+  order Order @relation(fields:[orderId], references:[id])
+  variantId Int
+  variant SneakerVariant @relation(fields:[variantId], references:[id])
+  quantity Int
+  purchasedPrice Decimal
+}
