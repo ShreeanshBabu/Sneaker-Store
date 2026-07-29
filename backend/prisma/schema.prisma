@@ -4,7 +4,7 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../generated/prisma"
 }
 
@@ -34,26 +34,36 @@ model Sneaker {
   mrp Decimal
   createdAt DateTime @default(now())
 
+  colorways SneakerColorway[]
+}
+
+model SneakerColorway {
+  id Int @id @default(autoincrement())
+  sneakerId Int
+  sneaker Sneaker @relation(fields:[sneakerId], references:[id])
+  color String
+  colorCode String
+  
   variants SneakerVariant[]
   images SneakerImage[]
 }
 
 model SneakerVariant {
   id Int @id @default(autoincrement())
-  sneakerId Int
-  sneaker Sneaker @relation(fields:[sneakerId], references:[id])
+  colorwayId Int
+  colorway SneakerColorway @relation(fields:[colorwayId], references:[id])
   size String
-  color String
   discountedPrice Decimal
   stock Int
 
   orderItems OrderItem[]
+  cartItems CartItem[]
 }
 
 model SneakerImage{
   id Int @id @default(autoincrement())
-  sneakerId Int
-  sneaker Sneaker @relation(fields:[sneakerId], references:[id])
+  colorwayId Int
+  colorway SneakerColorway @relation(fields:[colorwayId], references:[id])
   url String
   indexNo Int
   isThumbnail Boolean @default(false)
@@ -64,10 +74,11 @@ model User {
   name String 
   email String @unique
   hashedPassword String
-  role Role
+  role Role @default(USER)
   createdAt DateTime @default(now())
 
   orders Order[]
+  cart Cart?
 }
 
 model Order {
@@ -88,4 +99,23 @@ model OrderItem {
   variant SneakerVariant @relation(fields:[variantId], references:[id])
   quantity Int
   purchasedPrice Decimal
+}
+
+model Cart {
+  id Int @id @default(autoincrement())
+  userId Int @unique
+  user User @relation(fields:[userId], references:[id])
+
+  cartItems CartItem[]
+}
+
+model CartItem {
+  id Int @id @default(autoincrement())
+  cartId Int
+  cart Cart @relation(fields:[cartId], references:[id])
+  variantId Int
+  variant SneakerVariant @relation(fields:[variantId], references:[id])
+  quantity Int
+
+  @@unique([cartId, variantId])
 }
