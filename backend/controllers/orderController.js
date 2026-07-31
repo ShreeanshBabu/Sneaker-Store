@@ -125,17 +125,17 @@ async function updateOrderStatus(req, res) {
         });
 
         if (!order) return res.status(404).json({error: 'Invalid Order'});
-
-        if (order.userId !== req.user.userId) {
-            return res.status(404).json({error: 'Invalid Order'});
+        
+        if (!validTransitions[order.status].includes(newStatus)) {
+            return res.status(400).json({error: 'Invalid transition request'});
         }
 
-        if (!userAllowedStatuses.includes(newStatus)) {
+        if (req.user.role !== 'ADMIN' && !userAllowedStatuses.includes(newStatus)) {
             return res.status(403).json({error: 'Not authorized to perform this task'});
         }
 
-        if (!validTransitions[order.status].includes(newStatus)) {
-            return res.status(400).json({error: 'Invalid transition request'});
+        if (req.user.role !== 'ADMIN' && order.userId !== req.user.userId) {
+            return res.status(404).json({ error: 'Invalid Order' });
         }
 
         await prisma.order.update({

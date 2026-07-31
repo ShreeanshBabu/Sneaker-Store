@@ -32,6 +32,7 @@ model Sneaker {
   description String
   brand String
   mrp Decimal
+  isDeleted Boolean @default(false)
   createdAt DateTime @default(now())
 
   colorways SneakerColorway[]
@@ -55,9 +56,12 @@ model SneakerVariant {
   size String
   discountedPrice Decimal
   stock Int
+  isDeleted Boolean @default(false)
 
   orderItems OrderItem[]
   cartItems CartItem[]
+
+  @@unique([colorwayId, size])
 }
 
 model SneakerImage{

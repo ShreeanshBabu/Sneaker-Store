@@ -1,3 +1,4 @@
+const { error } = require('node:console');
 const prisma = require('../lib/prisma');
 
 async function getCart(req, res) {
@@ -40,9 +41,22 @@ async function addToCard(req, res) {
 
         const variant = await prisma.sneakerVariant.findUnique({
             where: {id: variantIdInt},
+            include: {
+                colorway: {
+                    include: {sneaker: true},
+                },
+            }
         });
 
         if (!variant) return res.status(400).json({error: 'Variant not found'});
+        
+        if (variant.colorway.sneaker.isDeleted) {
+            return res.status(400).json({error: 'This item is no longer available'});
+        }
+
+        if (variant.isDeleted) {
+            return res.status(400).json({error: 'This item is no longer available'});
+        }
 
         const cart = await prisma.cart.upsert({
             where: {userId: req.user.userId},
