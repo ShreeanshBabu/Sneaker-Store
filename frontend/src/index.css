@@ -1,1 +1,17 @@
 @import "tailwindcss";
+
+@theme {
+    --color-ink: #232321;
+    --color-canvas: #e7e7e3;
+    --color-card: #fafafa;
+    --color-brand: #4a69e2;
+    --color-accent: #ffa52f;
+    --font-heading: "Rubik", sans-serif;
+    --font-body: "Open Sans", sans-serif;
+}
+
+body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+}

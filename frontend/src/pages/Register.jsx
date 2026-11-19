@@ -15,9 +15,14 @@ export default function Register() {
     async function handleSubmit(e) {
         e.preventDefault()
         setError('')
+
+        if (password !== verifyPassword) {
+            setError('Passwords do not match')
+            return
+        }
+
         setSubmitting(true)
         try {
-            if (password !== verifyPassword) throw setError('Passwords do not match')
             await register(name, email, password)
             navigate('/')
         } catch (err) {

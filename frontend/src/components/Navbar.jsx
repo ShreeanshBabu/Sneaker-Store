@@ -6,7 +6,7 @@ export default function Navbar() {
     
     return (
         <nav className="flex items-center justify-between border-b p-4">
-            <Link to="/" className="text-xl font-bold">Kicks</Link>
+            <Link to="/" className="font-heading text-xl font-semibold text-brand">Kicks</Link>
             <div className="flex items-center gap-4">
                 <Link to="/store">Store</Link>
                 <Link to="/cart">Cart</Link>
